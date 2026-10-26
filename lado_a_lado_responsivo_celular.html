@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lado a Lado</title>
+<style>
+:root{--bg:#fff7f0;--card:#ffffff;--ink:#3a2a28;--muted:#8a7570;--accent:#e8664a;--accent2:#f4a259;--line:#f0dfd5;--me:#e8664a;--meInk:#fff;--them:#f6e7dc}
+body.dark{--bg:#17110f;--card:#241a17;--ink:#f6e9e2;--muted:#b09a92;--line:#3a2b26;--them:#34261f}
+*{box-sizing:border-box;margin:0;padding:0}
+html{min-height:100%;-webkit-text-size-adjust:100%} body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;min-height:100dvh;transition:.3s;overflow-x:hidden}
+button{font:inherit;cursor:pointer;border:0}
+.btn{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;padding:12px 22px;border-radius:30px;font-weight:600;box-shadow:0 6px 18px rgba(232,102,74,.35);transition:.2s}
+.btn:hover{transform:translateY(-2px)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line);box-shadow:none}
+/* LANDING */
+#landing{min-height:100vh;display:flex;flex-direction:column;background:radial-gradient(circle at 20% 20%,#ffd9c2 0,transparent 45%),radial-gradient(circle at 85% 80%,#ffb88a 0,transparent 40%),var(--bg)}
+body.dark #landing{background:radial-gradient(circle at 20% 20%,#4a2518 0,transparent 45%),radial-gradient(circle at 85% 80%,#5a3118 0,transparent 40%),var(--bg)}
+.top{display:flex;justify-content:space-between;align-items:center;padding:22px 48px}
+.logo{font-size:26px;font-weight:800;letter-spacing:-.5px}
+.logo span{color:var(--accent)}
+.hero{flex:1;display:flex;align-items:center;justify-content:center;gap:60px;padding:20px 60px}
+.hero h1{font-size:58px;line-height:1.05;letter-spacing:-2px;max-width:560px}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p{margin:20px 0 30px;color:var(--muted);font-size:19px;max-width:500px;line-height:1.5}
+.clocks{display:flex;gap:18px;margin-top:34px}
+.clock{background:var(--card);border-radius:18px;padding:14px 22px;box-shadow:0 8px 24px rgba(0,0,0,.07)}
+.clock small{color:var(--muted);display:block}
+.clock b{font-size:28px}
+.heroart{width:380px;height:380px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:120px;box-shadow:0 20px 60px rgba(232,102,74,.4);position:relative}
+.heroart:before,.heroart:after{content:'';position:absolute;border-radius:50%;border:2px dashed var(--accent);opacity:.35;inset:-26px}
+.heroart:after{inset:-56px;opacity:.18}
+/* MODAL */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:50;backdrop-filter:blur(4px)}
+.modal.show{display:flex}
+.box{background:var(--card);padding:36px;border-radius:24px;width:400px;max-width:92vw}
+.box h2{margin-bottom:6px}.box p{color:var(--muted);margin-bottom:18px;font-size:14px}
+.box input{width:100%;padding:13px 16px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;margin-bottom:12px}
+.err{color:#d33;font-size:13px;min-height:18px;margin-bottom:8px}
+.hint{font-size:12px;color:var(--muted);margin-top:12px;text-align:center}
+.auth-switch{margin-top:14px;text-align:center;font-size:14px;color:var(--muted)}
+.auth-switch button{background:none;color:var(--accent);font-weight:700;text-decoration:underline}
+.forgot{display:block;margin:4px auto 0;background:none;color:var(--accent);font-size:13px;text-decoration:underline}
+/* APP */
+#app{display:none;height:100vh;height:100dvh;min-height:0;flex-direction:column}
+nav{display:flex;align-items:center;gap:6px;padding:12px 28px;background:var(--card);border-bottom:1px solid var(--line)}
+nav .logo{margin-right:28px;font-size:22px}
+nav button.tab{background:none;color:var(--muted);padding:10px 18px;border-radius:24px;font-weight:600}
+nav button.tab.on{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+nav .sp{flex:1}
+nav .icon{background:var(--bg);width:40px;height:40px;border-radius:50%;font-size:18px;margin-left:8px}
+main{flex:1;overflow:auto;padding:24px 28px}
+section{display:none;max-width:1100px;margin:0 auto}
+section.on{display:block}
+.card{background:var(--card);border-radius:22px;box-shadow:0 8px 28px rgba(0,0,0,.06);overflow:hidden}
+/* FEED E AMIGOS */
+.feedform{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.feedform textarea{width:100%;min-height:80px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:inherit}
+.post{padding:18px;margin-bottom:14px;background:var(--card);border-radius:18px;box-shadow:0 6px 20px rgba(0,0,0,.05)}
+.posthead{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.post p{white-space:pre-wrap;line-height:1.5}
+.friendsgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+.friend{padding:18px;background:var(--card);border-radius:18px;box-shadow:0 6px 20px rgba(0,0,0,.05);display:flex;align-items:center;gap:12px}
+.friend .av{flex-shrink:0}
+.empty{padding:26px;text-align:center;color:var(--muted)}
+/* CHAT */
+.chat{display:flex;flex-direction:column;height:calc(100vh - 140px)}
+.chathead{padding:14px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px}
+.av{width:44px;height:44px;border-radius:50%;object-fit:cover;background:var(--accent2);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+.dot{width:10px;height:10px;background:#3c3;border-radius:50%;display:inline-block;margin-right:6px}
+.msgs{flex:1;overflow:auto;padding:20px;display:flex;flex-direction:column;gap:10px}
+.m{max-width:68%;padding:11px 16px;border-radius:20px;line-height:1.35;animation:pop .25s}
+@keyframes pop{from{transform:scale(.9);opacity:0}}
+.m.me{align-self:flex-end;background:var(--me);color:var(--meInk);border-bottom-right-radius:6px}
+.m.them{align-self:flex-start;background:var(--them);border-bottom-left-radius:6px}
+.m .tr{display:block;font-size:12.5px;opacity:.85;margin-top:5px;padding-top:5px;border-top:1px dashed currentColor}
+.m small{display:block;font-size:10px;opacity:.6;margin-top:3px}
+.compose{display:flex;gap:10px;padding:14px;border-top:1px solid var(--line);align-items:center}
+.compose input{flex:1;padding:13px 18px;border-radius:30px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font:inherit}
+.compose select{padding:10px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink)}
+/* VIDEO */
+.call{background:#0d0907;aspect-ratio:16/9;position:relative;border-radius:22px;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#fff}
+.call video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.remote{position:absolute;inset:0;background:linear-gradient(160deg,#3b2118,#1a0f0b);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+.remote .big{width:130px;height:130px;font-size:52px}
+.pip{position:absolute;right:18px;bottom:90px;width:200px;aspect-ratio:4/3;background:#222;border-radius:14px;overflow:hidden;border:2px solid #fff3;display:none}
+.pip.show{display:block}
+.pip video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.ctrls{position:absolute;bottom:18px;left:0;right:0;display:flex;justify-content:center;gap:14px}
+.ctrls button{width:54px;height:54px;border-radius:50%;background:#ffffff26;color:#fff;font-size:22px;backdrop-filter:blur(6px)}
+.ctrls button.end{background:#e53935}.ctrls button.go{background:#2e9d4a;width:auto;padding:0 26px;border-radius:30px;font-size:16px;font-weight:600}
+.timer{position:absolute;top:16px;left:20px;background:#0008;padding:6px 14px;border-radius:20px;font-size:14px;display:none}
+/* GALLERY */
+.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.head h2{font-size:28px}
+.grid{columns:3 240px;column-gap:16px}
+.grid .it{break-inside:avoid;margin-bottom:16px;border-radius:18px;overflow:hidden;position:relative;background:var(--card);box-shadow:0 6px 20px rgba(0,0,0,.08)}
+.grid img,.grid video{width:100%;display:block}
+.grid .cap{position:absolute;bottom:0;left:0;right:0;padding:26px 14px 10px;color:#fff;background:linear-gradient(transparent,#000a);font-size:13px}
+/* MEMORIES */
+.tl{position:relative;padding-left:34px;margin-top:10px}
+.tl:before{content:'';position:absolute;left:11px;top:6px;bottom:6px;width:3px;background:linear-gradient(var(--accent),var(--accent2));border-radius:3px}
+.mem{position:relative;background:var(--card);border-radius:18px;padding:18px 22px;margin-bottom:18px;box-shadow:0 6px 20px rgba(0,0,0,.06);animation:pop .3s}
+.mem:before{content:'';position:absolute;left:-31px;top:24px;width:17px;height:17px;border-radius:50%;background:var(--accent);border:4px solid var(--bg)}
+.mem time{color:var(--accent);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.5px}
+.mem h3{margin:4px 0}.mem p{color:var(--muted)}
+.form{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+.form input{padding:12px 16px;border-radius:14px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font:inherit;flex:1;min-width:140px}
+/* PROFILE */
+.cover{height:260px;background:linear-gradient(120deg,#e8664a,#f4a259 60%,#f7d1a1);background-size:cover;background-position:center;position:relative}
+.cover label{position:absolute;right:16px;top:16px;background:#0007;color:#fff;padding:8px 14px;border-radius:20px;font-size:13px;cursor:pointer}
+.pinfo{padding:0 34px 30px;position:relative}
+.avatar{width:150px;height:150px;border-radius:50%;border:6px solid var(--card);margin-top:-75px;background:var(--accent2) center/cover;display:flex;align-items:center;justify-content:center;font-size:60px;color:#fff;position:relative}
+.avatar label{position:absolute;bottom:4px;right:4px;width:38px;height:38px;border-radius:50%;background:var(--card);color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;box-shadow:0 2px 8px #0004}
+.pinfo h2{font-size:30px;margin-top:10px}
+.bio{color:var(--muted);margin:6px 0 14px;font-size:17px}
+.bio[contenteditable]{outline:2px dashed var(--accent);padding:4px 8px;border-radius:8px;color:var(--ink)}
+.stats{display:flex;gap:26px;margin-top:12px;color:var(--muted)}.stats b{color:var(--ink);font-size:20px;display:block}
+iframe.map{width:100%;height:380px;border:0;border-radius:18px}
+.places{display:flex;gap:14px;margin-bottom:16px;flex-wrap:wrap}
+.places button{background:var(--card);color:var(--ink);padding:12px 20px;border-radius:16px;border:1.5px solid var(--line);font-weight:600}
+.places button.on{border-color:var(--accent);color:var(--accent)}
+input[type=file]{display:none}
+.tools{margin-top:26px}
+@media(max-width:800px){
+  .hero{flex-direction:column;padding:24px 20px;gap:32px;text-align:center}
+  .hero h1{font-size:clamp(32px,7vw,42px);letter-spacing:-1px;margin-inline:auto}
+  .hero p{font-size:16px;margin:16px auto 24px}
+  .heroart{width:min(58vw,220px);height:min(58vw,220px);font-size:70px}
+  .top{padding:16px 20px;gap:14px;flex-wrap:wrap}
+  .top>div:last-child{flex-wrap:wrap;justify-content:flex-end}
+  nav{overflow:visible;flex-wrap:wrap;padding:10px;gap:6px}
+  nav .logo{width:100%;margin:0 0 4px;font-size:21px}
+  nav button.tab{flex:1 1 40%;min-width:0;padding:10px 8px;font-size:12px;white-space:normal}
+  nav .sp{display:none}
+  nav .icon{margin-left:0;flex:1 1 40%;border-radius:14px}
+  main{padding:16px 12px}
+  .head{gap:10px;align-items:flex-start;flex-wrap:wrap}
+  .head h2{font-size:23px}
+  .chat{height:calc(100dvh - 260px);min-height:360px}
+  .chathead{padding:12px;gap:8px;flex-wrap:wrap}
+  .chathead>div:nth-child(2){min-width:0;flex:1}
+  .chathead label{width:100%;display:flex;align-items:center;gap:8px}
+  .chathead select{flex:1;min-width:0}
+  .msgs{padding:12px}
+  .m{max-width:88%;overflow-wrap:anywhere}
+  .compose{padding:10px;gap:7px}
+  .compose input{min-width:0;width:100%;padding:12px}
+  .compose .btn{padding:12px 14px;white-space:nowrap}
+  .call{min-height:300px}
+  .pip{width:112px;right:10px;bottom:78px}
+  .ctrls{gap:8px;bottom:12px}
+  .ctrls button{width:46px;height:46px}
+  .ctrls button.go{padding:0 18px}
+  .cover{height:180px}
+  .pinfo{padding:0 18px 24px}
+  .avatar{width:112px;height:112px;margin-top:-56px;font-size:44px}
+  .pinfo h2{font-size:25px}
+  .stats{gap:18px;flex-wrap:wrap}
+  iframe.map{height:300px}
+  .form{flex-direction:column}
+  .form input{width:100%;min-width:0;flex:auto}
+  .feedform .btn{width:100%}
+  .places button{flex:1 1 100%;text-align:left}
+  .box{padding:26px 20px;max-height:90dvh;overflow:auto}
+}
+@media(max-width:420px){
+  .top{align-items:flex-start}
+  .top .logo{font-size:23px}
+  .top>div:last-child{width:100%;justify-content:stretch}
+  .top>div:last-child .btn{flex:1;padding:10px 12px;font-size:13px}
+  .clocks{justify-content:center;gap:10px}
+  .clock{padding:12px 14px}
+  .clock b{font-size:23px}
+  .friendsgrid{grid-template-columns:1fr}
+  .grid{columns:2 130px;column-gap:10px}
+  .grid .it{margin-bottom:10px}
+  .stats{gap:12px}
+}
+</style>
+</head>
+<body>
+
+<!-- LANDING -->
+<div id="landing">
+  <div class="top">
+    <div class="logo">Lado <span>a</span> Lado</div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <button class="btn ghost" id="themeL">🌙 Modo escuro</button>
+      <button class="btn ghost" id="btnSignup">Criar conta</button>
+      <button class="btn" id="btnLogin">Entrar</button>
+    </div>
+  </div>
+  <div class="hero">
+    <div>
+      <h1>Mesmo a milhares de km, <em>lado a lado</em>.</h1>
+      <p>Um espaço privado e intimista só para vocês dois: conversas com tradução simultânea, chamadas de vídeo, fotos, memórias e muito carinho.</p>
+      <button class="btn" id="btnLogin2" style="font-size:18px;padding:15px 34px">Entrar na nossa rede</button>
+      <div class="clocks">
+        <div class="clock"><small>🇧🇷 Brasil</small><b id="clkBR">--:--</b></div>
+        <div class="clock"><small>🇳🇿 Nova Zelândia</small><b id="clkNZ">--:--</b></div>
+      </div>
+    </div>
+    <div class="heroart">💞</div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div class="modal" id="loginModal">
+  <form class="box" id="loginForm">
+    <h2>Bem-vindo de volta 💛</h2>
+    <p>Acesso restrito a vocês dois.</p>
+    <input id="user" placeholder="Email ou usuário" autocomplete="username" required>
+    <input id="pass" type="password" placeholder="Senha" autocomplete="current-password" required>
+    <div class="err" id="err"></div>
+    <button class="btn" style="width:100%" type="submit">Entrar</button>
+    <button class="btn ghost" style="width:100%;margin-top:10px" type="button" id="closeLogin">Cancelar</button>
+    <button class="forgot" type="button" id="openRecovery">Esqueci a senha</button>
+    <div class="hint">Demonstração: <b>voce</b>, <b>domingos</b> ou <b>pessoa3</b> até <b>pessoa10</b> / senha <b>ladoalado</b></div>
+    <div class="auth-switch">Ainda não tem conta? <button type="button" id="openSignup">Criar agora</button></div>
+  </form>
+</div>
+
+<!-- RECUPERAÇÃO DE SENHA -->
+<div class="modal" id="recoveryModal">
+  <form class="box" id="recoveryForm">
+    <h2>Recuperar senha 🔐</h2>
+    <p>Informe o email da sua conta e crie uma nova senha.</p>
+    <input id="recoveryEmail" type="email" placeholder="Seu email" autocomplete="email" required>
+    <input id="recoveryPass" type="password" placeholder="Nova senha (mínimo de 6 caracteres)" autocomplete="new-password" minlength="6" required>
+    <input id="recoveryPassConfirm" type="password" placeholder="Confirme a nova senha" autocomplete="new-password" minlength="6" required>
+    <div class="err" id="recoveryErr"></div>
+    <button class="btn" style="width:100%" type="submit">Alterar senha</button>
+    <button class="btn ghost" style="width:100%;margin-top:10px" type="button" id="closeRecovery">Cancelar</button>
+    <div class="auth-switch">Lembrou da senha? <button type="button" id="backFromRecovery">Entrar</button></div>
+  </form>
+</div>
+
+<!-- CADASTRO -->
+<div class="modal" id="signupModal">
+  <form class="box" id="signupForm">
+    <h2>Criar a sua conta 💛</h2>
+    <p>Cadastre um email e uma senha para entrar no Lado a Lado.</p>
+    <input id="signupEmail" type="email" placeholder="Seu email" autocomplete="email" required>
+    <input id="signupPass" type="password" placeholder="Senha (mínimo de 6 caracteres)" autocomplete="new-password" minlength="6" required>
+    <input id="signupPassConfirm" type="password" placeholder="Confirme a senha" autocomplete="new-password" minlength="6" required>
+    <div class="err" id="signupErr"></div>
+    <button class="btn" style="width:100%" type="submit">Cadastrar</button>
+    <button class="btn ghost" style="width:100%;margin-top:10px" type="button" id="closeSignup">Cancelar</button>
+    <div class="hint">Protótipo local: os dados ficam neste navegador e não são compartilhados entre dispositivos.</div>
+    <div class="auth-switch">Já tem uma conta? <button type="button" id="backToLogin">Entrar</button></div>
+  </form>
+</div>
+
+<!-- CONFIRMAÇÃO DE EMAIL (SIMULAÇÃO DO PROTÓTIPO) -->
+<div class="modal" id="verifyEmailModal">
+  <form class="box" id="verifyEmailForm">
+    <h2>Confirme seu email 📩</h2>
+    <p id="verifyEmailText">Enviamos um código para seu email.</p>
+    <input id="verifyCodeInput" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="Código de 6 dígitos" autocomplete="one-time-code" required>
+    <div class="hint" id="demoCodeHint">Modo demonstração: o código aparece aqui porque este protótipo ainda não envia emails reais.</div>
+    <div class="err" id="verifyEmailErr"></div>
+    <button class="btn" style="width:100%" type="submit">Confirmar email</button>
+    <button class="btn ghost" style="width:100%;margin-top:10px" type="button" id="cancelVerifyEmail">Cancelar cadastro</button>
+  </form>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <nav>
+    <div class="logo">Lado <span>a</span> Lado</div>
+    <button class="tab on" data-t="feed">📰 Publicações</button>
+     <button class="tab" data-t="amigos">👥 Amigos</button>
+     <button class="tab" data-t="chat">🔒 Chat privado</button>
+    <button class="tab" data-t="video">📹 Chamada de Vídeo</button>
+    <button class="tab" data-t="gal">🖼️ Galeria</button>
+    <button class="tab" data-t="mem">⏳ Memórias</button>
+    <button class="tab" data-t="perfil">👤 Perfil</button>
+    <div class="sp"></div>
+    <button class="icon" id="theme" title="Modo escuro">🌙</button>
+    <button class="icon" id="logout" title="Sair">⎋</button>
+  </nav>
+  <main>
+    <!-- PUBLICAÇÕES VISÍVEIS A TODOS OS PARTICIPANTES -->
+    <section id="feed" class="on">
+      <div class="head"><h2>Publicações de todos</h2></div>
+      <form id="postForm" class="feedform">
+        <textarea id="postText" maxlength="2000" placeholder="Compartilhe uma novidade com todos os participantes..." required></textarea>
+        <button class="btn" type="submit">Publicar</button>
+      </form>
+      <div id="feedPosts"></div>
+    </section>
+    <!-- LISTA PÚBLICA DE AMIGOS -->
+    <section id="amigos">
+      <div class="head"><h2>Todos os amigos</h2></div>
+      <p style="color:var(--muted);margin-bottom:16px">A lista de participantes e seus amigos é visível para todos.</p>
+      <div class="friendsgrid" id="friendsGrid"></div>
+    </section>
+    <!-- CHAT PRIVADO -->
+    <section id="chat">
+      <div class="card chat">
+        <div class="chathead">
+          <div class="av" id="peerAv">D</div>
+          <div><b id="peerName">Domingos</b><br><small style="color:var(--muted)"><span id="peerStatus">Status não conectado</span> • <span id="peerLoc">Nova Zelândia 🇳🇿</span></small></div>
+          <div style="flex:1"></div>
+          <label style="font-size:13px;color:var(--muted)">🌐 Traduzir para:
+            <select id="myLang" style="padding:6px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)">
+              <option value="pt">Português</option><option value="en">English</option>
+            </select></label>
+        </div>
+        <div class="msgs" id="msgs"></div>
+        <form class="compose" id="sendForm">
+          <input id="msgIn" placeholder="Escreva no seu idioma… ele lê no dele ✨" autocomplete="off">
+          <button class="btn" type="submit">Enviar ➤</button>
+        </form>
+      </div>
+    </section>
+    <!-- VIDEO -->
+    <section id="video">
+      <div class="head"><h2>Chamada de Vídeo</h2><span style="color:var(--muted)">Alta definição, sem apps externos</span></div>
+      <div class="call" id="call">
+        <div class="remote" id="remote"><div class="av big" id="callAv">D</div><b style="font-size:22px" id="callName">Domingos</b><span style="opacity:.7" id="callState">Pronto para ligar</span></div>
+        <video id="localFull" autoplay muted playsinline style="display:none;position:absolute;inset:0"></video>
+        <div class="pip" id="pip"><video id="localPip" autoplay muted playsinline></video></div>
+        <div class="timer" id="timer">00:00</div>
+        <div class="ctrls">
+          <button class="go" id="goCall">📞 Ligar</button>
+          <button id="mic" style="display:none">🎤</button>
+          <button id="cam" style="display:none">📷</button>
+          <button class="end" id="endCall" style="display:none">✕</button>
+        </div>
+      </div>
+      <p id="camNote" style="color:var(--muted);margin-top:12px;font-size:14px"></p>
+    </section>
+    <!-- GALERIA -->
+    <section id="gal">
+      <div class="head"><h2>Galeria</h2>
+        <label class="btn" style="cursor:pointer">+ Adicionar foto/vídeo<input type="file" id="upGal" accept="image/*,video/*" multiple></label></div>
+      <div class="grid" id="grid"></div>
+    </section>
+    <!-- MEMÓRIAS -->
+    <section id="mem">
+      <div class="head"><h2>Nossas Memórias</h2></div>
+      <form class="form" id="memForm">
+        <input type="date" id="mDate" required><input id="mTitle" placeholder="Título do momento" required><input id="mText" placeholder="Conte o que aconteceu…" style="flex:2" required>
+        <button class="btn" type="submit">Guardar</button>
+      </form>
+      <div class="tl" id="tl"></div>
+    </section>
+    <!-- PERFIL -->
+    <section id="perfil">
+      <div class="card">
+        <div class="cover" id="cover"><label>📷 Alterar capa<input type="file" id="upCover" accept="image/*"></label></div>
+        <div class="pinfo">
+          <div class="avatar" id="avatar"><span id="avInit">V</span><label>✎<input type="file" id="upAv" accept="image/*"></label></div>
+          <h2 id="pName">Você</h2>
+          <div class="bio" id="bio" title="Clique em Editar status"></div>
+          <button class="btn ghost" id="editBio" style="padding:8px 18px">✎ Editar status</button>
+          <button class="btn ghost" id="deleteAccount" style="padding:8px 18px;margin-top:10px;border-color:#c62828;color:#c62828;display:none">🗑️ Excluir minha conta</button>
+          <div class="stats"><div><b id="sMsg">0</b>mensagens</div><div><b id="sPho">0</b>mídias</div><div><b id="sMem">0</b>memórias</div></div>
+        </div>
+      </div>
+      <div class="tools">
+        <div class="head"><h2>🗺️ Mapa & Localização</h2></div>
+        <div class="places"><button class="on" data-loc="br">🇧🇷 Brasil — São Paulo</button><button data-loc="nz">🇳🇿 Nova Zelândia — Auckland</button></div>
+        <iframe class="map" id="map" loading="lazy"></iframe>
+        <p style="color:var(--muted);margin-top:10px">Diferença de fuso: <b id="diff"></b></p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const USERS={
+ voce:{name:'Você',peer:'Domingos',lang:'pt',peerLang:'en',loc:'Brasil 🇧🇷',peerLoc:'Nova Zelândia 🇳🇿'},
+ domingos:{name:'Domingos',peer:'Você',lang:'en',peerLang:'pt',loc:'Nova Zelândia 🇳🇿',peerLoc:'Brasil 🇧🇷'},
+ pessoa3:{name:'Ana',peer:'Você',lang:'pt',peerLang:'pt',loc:'Brasil 🇧🇷',peerLoc:'Brasil 🇧🇷'},
+ pessoa4:{name:'Lucas',peer:'Você',lang:'pt',peerLang:'pt',loc:'Brasil 🇧🇷',peerLoc:'Brasil 🇧🇷'},
+ pessoa5:{name:'Mariana',peer:'Você',lang:'pt',peerLang:'pt',loc:'Brasil 🇧🇷',peerLoc:'Brasil 🇧🇷'},
+ pessoa6:{name:'Pedro',peer:'Você',lang:'pt',peerLang:'pt',loc:'Brasil 🇧🇷',peerLoc:'Brasil 🇧🇷'},
+ pessoa7:{name:'Sofia',peer:'Você',lang:'pt',peerLang:'pt',loc:'Brasil 🇧🇷',peerLoc:'Brasil 🇧🇷'},
+ pessoa8:{name:'Gabriel',peer:'Você',lang:'pt',peerLang:'pt',loc:'Brasil 🇧🇷',peerLoc:'Brasil 🇧🇷'},
+ pessoa9:{name:'Beatriz',peer:'Você',lang:'pt',peerLang:'pt',loc:'Brasil 🇧🇷',peerLoc:'Brasil 🇧🇷'},
+ pessoa10:{name:'Rafael',peer:'Você',lang:'pt',peerLang:'pt',loc:'Brasil 🇧🇷',peerLoc:'Brasil 🇧🇷'}
+};
+const PASS='ladoalado';
+let me=null;
+const store={get:(k,d)=>{try{return JSON.parse(localStorage.getItem('lal_'+k))??d}catch(e){return d}},set:(k,v)=>localStorage.setItem('lal_'+k,JSON.stringify(v))};
+
+/* tema */
+function setTheme(d){document.body.classList.toggle('dark',d);store.set('dark',d);$('#theme').textContent=d?'☀️':'🌙';$('#themeL').textContent=d?'☀️ Modo claro':'🌙 Modo escuro'}
+setTheme(store.get('dark',false));
+$('#theme').onclick=$('#themeL').onclick=()=>setTheme(!document.body.classList.contains('dark'));
+
+/* relógios */
+function clocks(){const f=tz=>new Date().toLocaleTimeString('pt-BR',{timeZone:tz,hour:'2-digit',minute:'2-digit'});
+ $('#clkBR').textContent=f('America/Sao_Paulo');$('#clkNZ').textContent=f('Pacific/Auckland');}
+clocks();setInterval(clocks,10000);
+
+/* login */
+const openL=()=>{$('#loginModal').classList.add('show');$('#user').focus()};
+$('#btnLogin').onclick=$('#btnLogin2').onclick=openL;
+const openS=()=>{$('#loginModal').classList.remove('show');$('#signupModal').classList.add('show');$('#signupEmail').focus()};
+$('#btnSignup').onclick=openS;
+$('#openSignup').onclick=openS;
+$('#closeLogin').onclick=()=>$('#loginModal').classList.remove('show');
+$('#closeSignup').onclick=()=>$('#signupModal').classList.remove('show');
+$('#backToLogin').onclick=()=>{$('#signupModal').classList.remove('show');openL()};
+const openRecovery=()=>{$('#loginModal').classList.remove('show');$('#recoveryModal').classList.add('show');$('#recoveryEmail').focus();$('#recoveryErr').textContent=''};
+$('#openRecovery').onclick=openRecovery;
+$('#closeRecovery').onclick=()=>$('#recoveryModal').classList.remove('show');
+$('#backFromRecovery').onclick=()=>{$('#recoveryModal').classList.remove('show');openL()};
+
+function normalizeEmail(email){return email.trim().toLowerCase()}
+function accountKey(email){return 'email:'+normalizeEmail(email)}
+function accountName(email){
+ const first=normalizeEmail(email).split('@')[0].replace(/[._-]+/g,' ').trim();
+ return first.replace(/\b\w/g,c=>c.toUpperCase())||'Você';
+}
+function hydrateAccount(key){
+ const accounts=store.get('accounts',{});
+ const account=Object.values(accounts).find(a=>a.key===key);
+ if(account){USERS[key]=account.profile;return true}
+ return false;
+}
+$('#loginForm').onsubmit=e=>{e.preventDefault();
+ const identifier=$('#user').value.trim().toLowerCase(),p=$('#pass').value;
+ if(USERS[identifier]&&p===PASS){store.set('session',identifier);enter(identifier);return}
+ const account=store.get('accounts',{})[identifier];
+ if(account&&account.password===p){USERS[account.key]=account.profile;store.set('session',account.key);enter(account.key);return}
+ $('#err').textContent='Email/usuário ou senha incorretos.';
+};
+let pendingEmailVerification=null;
+$('#signupForm').onsubmit=e=>{e.preventDefault();
+ const email=normalizeEmail($('#signupEmail').value),password=$('#signupPass').value,confirmation=$('#signupPassConfirm').value;
+ const err=$('#signupErr');err.textContent='';
+ if(password.length<6){err.textContent='A senha precisa ter pelo menos 6 caracteres.';return}
+ if(password!==confirmation){err.textContent='As senhas não coincidem.';return}
+ const accounts=store.get('accounts',{});
+ if(accounts[email]||USERS[email]){err.textContent='Este email já está cadastrado.';return}
+ // Código apenas demonstrativo: em produção, ele deve ser gerado e enviado pelo servidor.
+ const code=String(Math.floor(100000+Math.random()*900000));
+ pendingEmailVerification={email,password,code};
+ $('#signupModal').classList.remove('show');
+ $('#verifyEmailText').textContent='Confirme o endereço: '+email;
+ $('#verifyCodeInput').value='';
+ $('#verifyEmailErr').textContent='';
+ $('#demoCodeHint').textContent='CÓDIGO DE TESTE: '+code+' — simulação local. Não é uma confirmação real de email.';
+ $('#verifyEmailModal').classList.add('show');
+};
+$('#verifyEmailForm').onsubmit=e=>{e.preventDefault();
+ const err=$('#verifyEmailErr');
+ if(!pendingEmailVerification){err.textContent='Nenhum cadastro aguardando confirmação.';return}
+ if($('#verifyCodeInput').value.trim()!==pendingEmailVerification.code){err.textContent='Código incorreto. Confira e tente novamente.';return}
+ const accounts=store.get('accounts',{});
+ const email=pendingEmailVerification.email;
+ if(accounts[email]||USERS[email]){err.textContent='Este email já está cadastrado.';return}
+ const key=accountKey(email);
+ const profile={name:accountName(email),peer:'Domingos',lang:'pt',peerLang:'en',loc:'Brasil 🇧🇷',peerLoc:'Nova Zelândia 🇳🇿'};
+ accounts[email]={key,password:pendingEmailVerification.password,profile,emailVerified:true};store.set('accounts',accounts);USERS[key]=profile;
+ pendingEmailVerification=null;
+ $('#verifyEmailModal').classList.remove('show');
+ store.set('session',key);enter(key);
+};
+$('#cancelVerifyEmail').onclick=()=>{pendingEmailVerification=null;$('#verifyEmailModal').classList.remove('show');$('#signupModal').classList.add('show')};
+$('#recoveryForm').onsubmit=e=>{e.preventDefault();
+ const email=normalizeEmail($('#recoveryEmail').value),password=$('#recoveryPass').value,confirmation=$('#recoveryPassConfirm').value;
+ const err=$('#recoveryErr');err.textContent='';
+ if(password.length<6){err.textContent='A senha precisa ter pelo menos 6 caracteres.';return}
+ if(password!==confirmation){err.textContent='As senhas não coincidem.';return}
+ const accounts=store.get('accounts',{});
+ if(!accounts[email]){err.textContent='Não encontramos uma conta com este email nesta demonstração.';return}
+ accounts[email].password=password;store.set('accounts',accounts);
+ $('#recoveryModal').classList.remove('show');openL();$('#user').value=email;$('#pass').value='';$('#err').textContent='Senha alterada com sucesso. Já pode entrar.';
+};
+$('#deleteAccount').onclick=()=>{
+ const accounts=store.get('accounts',{});
+ const entry=Object.entries(accounts).find(([email,a])=>a.key===me);
+ if(!entry){alert('Esta é uma conta de demonstração fixa. Nesta versão, só é possível excluir contas criadas pelo formulário de cadastro.');return}
+ const [email,account]=entry;
+ const confirmation=prompt('Para confirmar a exclusão, digite a senha desta conta:');
+ if(confirmation===null)return;
+ if(confirmation!==account.password){alert('Senha incorreta. A conta não foi excluída.');return}
+ if(!confirm('Tem certeza de que deseja excluir sua conta? Essa ação não pode ser desfeita nesta demonstração.'))return;
+ delete accounts[email];store.set('accounts',accounts);
+ const posts=store.get('public_posts',[]).filter(p=>p.from!==me);store.set('public_posts',posts);
+ ['prof_'+me,'msgs_'+me,'gal_'+me,'mem_'+me].forEach(k=>localStorage.removeItem('lal_'+k));
+ localStorage.removeItem('lal_session');delete USERS[me];
+ alert('A conta cadastrada foi removida deste navegador.');location.reload();
+};
+$('#logout').onclick=()=>{localStorage.removeItem('lal_session');location.reload()};
+const savedSession=store.get('session');
+if(savedSession&&(USERS[savedSession]||hydrateAccount(savedSession)))enter(savedSession);
+
+function enter(u){
+ me=u;const U=USERS[u];
+ $('#landing').style.display='none';$('#loginModal').classList.remove('show');$('#app').style.display='flex';
+ $('#peerName').textContent=U.peer;$('#peerAv').textContent=U.peer[0];$('#peerLoc').textContent=U.peerLoc;$('#peerStatus').textContent='Presença real indisponível neste protótipo';
+ $('#callName').textContent=U.peer;$('#callAv').textContent=U.peer[0];
+ $('#myLang').value=U.lang;
+ loadChat();loadGal();loadMem();loadProfile();loadFeed();loadFriends();
+}
+
+/* tabs */
+$$('.tab').forEach(b=>b.onclick=()=>{$$('.tab').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+ $$('section').forEach(s=>s.classList.toggle('on',s.id===b.dataset.t));
+ if(b.dataset.t==='perfil')setMap('br')});
+
+/* ---------- PUBLICAÇÕES E AMIGOS (DEMONSTRAÇÃO LOCAL) ---------- */
+function loadFeed(){
+ const posts=store.get('public_posts',[]);
+ const box=$('#feedPosts');box.innerHTML='';
+ if(!posts.length){box.innerHTML='<div class="empty">Ainda não há publicações. Seja a primeira pessoa a compartilhar algo!</div>';return}
+ [...posts].sort((a,b)=>b.t-a.t).forEach(p=>{
+  const user=USERS[p.from]||{name:p.name||'Participante'};
+  const el=document.createElement('article');el.className='post';
+  const head=document.createElement('div');head.className='posthead';
+  const av=document.createElement('div');av.className='av';av.textContent=user.name[0].toUpperCase();
+  const meta=document.createElement('div');const strong=document.createElement('b');strong.textContent=user.name;
+  const time=document.createElement('small');time.style.display='block';time.style.color='var(--muted)';time.textContent=new Date(p.t).toLocaleString('pt-BR');
+  meta.append(strong,time);head.append(av,meta);
+  const body=document.createElement('p');body.textContent=p.text;
+  el.append(head,body);box.append(el);
+ });
+}
+$('#postForm').onsubmit=e=>{e.preventDefault();const text=$('#postText').value.trim();if(!text)return;
+ const posts=store.get('public_posts',[]);posts.push({from:me,text,t:Date.now()});store.set('public_posts',posts);$('#postText').value='';loadFeed()};
+function loadFriends(){
+ const grid=$('#friendsGrid');grid.innerHTML='';
+ Object.entries(USERS).forEach(([id,u])=>{
+  const el=document.createElement('div');el.className='friend';
+  const av=document.createElement('div');av.className='av';av.textContent=u.name[0].toUpperCase();
+  const info=document.createElement('div');const name=document.createElement('b');name.textContent=u.name;
+  const status=document.createElement('small');status.style.display='block';status.style.color='var(--muted)';status.textContent=id===me?'Seu perfil':'Participante da rede';
+  info.append(name,status);el.append(av,info);grid.append(el);
+ });
+}
+
+/* ---------- TRADUÇÃO ---------- */
+const DICT_PT_EN={'oi':'hi','olá':'hello','bom dia':'good morning','boa noite':'good night','boa tarde':'good afternoon','saudade':'I miss you','te amo':'I love you','eu te amo':'I love you','estou com saudade':'I miss you','como foi seu dia':'how was your day','como foi o seu dia?':'how was your day?','tudo bem':'all good','tudo bem?':'how are you?','que horas são aí?':'what time is it there?','já é de manhã aí?':'is it already morning there?','beijos':'kisses','um beijo':'a kiss','abraço':'hug'};
+const DICT_EN_PT={'hi':'oi','hello':'olá','good morning':'bom dia','good night':'boa noite','i miss you':'estou com saudade','i love you':'eu te amo','how was your day?':'como foi o seu dia?','how are you?':'tudo bem?','kisses':'beijos','hug':'abraço'};
+async function translate(text,from,to){
+ if(from===to)return text;
+ const key=text.trim().toLowerCase();const d=from==='pt'?DICT_PT_EN:DICT_EN_PT;
+ if(d[key])return d[key];
+ try{const c=new AbortController();setTimeout(()=>c.abort(),3500);
+  const r=await fetch('https://api.mymemory.translated.net/get?q='+encodeURIComponent(text)+'&langpair='+from+'|'+to,{signal:c.signal});
+  const j=await r.json();const t=j.responseData&&j.responseData.translatedText;if(t&&!/INVALID|MYMEMORY/i.test(t))return t;}catch(e){}
+ return '['+(to==='en'?'translation':'tradução')+'] '+text;
+}
+
+/* ---------- CHAT ---------- */
+/* Respostas fictícias usadas apenas para demonstrar o chat local. */
+const REPLIES=[
+ ['Hi! How was your day?','Oi! Como foi seu dia?'],
+ ['I miss you.','Estou com saudade.'],
+ ['Good morning, my friend!','Bom dia, meu amigo!'],
+ ['I hope you are doing well.','Espero que você esteja bem.']
+];
+let msgs=[];
+
+function loadChat(){
+ msgs=store.get('msgs',null);
+ if(!msgs){msgs=[{from:'domingos',orig:REPLIES[0][0],lang:'en',t:Date.now()-3600e3}];store.set('msgs',msgs)}
+ renderChat();
+}
+async function renderChat(){
+ const box=$('#msgs');box.innerHTML='';const myL=$('#myLang').value;if(!msgs.length){box.innerHTML='<div class="empty">Nenhuma mensagem nesta conversa privada ainda.</div>';$('#sMsg').textContent='0';return;}
+ for(const m of msgs){
+  const mine=m.from===me;const div=document.createElement('div');div.className='m '+(mine?'me':'them');
+  let html=m.orig;
+  if(m.lang!==myL){const tr=m.tr&&m.tr[myL]||await translate(m.orig,m.lang,myL);html=tr+'<span class="tr">🌐 '+(m.lang==='en'?'Original (English)':'Original (Português)')+': '+m.orig+'</span>'}
+  div.innerHTML=html+'<small>'+new Date(m.t).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+'</small>';
+  box.appendChild(div);
+ }
+ box.scrollTop=box.scrollHeight;$('#sMsg').textContent=msgs.length;
+}
+$('#myLang').onchange=renderChat;
+$('#sendForm').onsubmit=async e=>{e.preventDefault();const v=$('#msgIn').value.trim();if(!v)return;$('#msgIn').value='';
+ msgs.push({from:me,orig:v,lang:$('#myLang').value,t:Date.now()});store.set('msgs',msgs);await renderChat();
+ // resposta simulada do outro lado (demo local)
+ setTimeout(async()=>{const peer=me==='voce'?'domingos':'voce';const pl=USERS[peer].lang;const r=REPLIES[Math.floor(Math.random()*REPLIES.length)];
+  msgs.push({from:peer,orig:pl==='en'?r[0]:r[1],lang:pl,t:Date.now()});store.set('msgs',msgs);renderChat()},1800)};
+
+/* ---------- VÍDEO ---------- */
+let stream=null,tInt=null,sec=0;
+$('#goCall').onclick=async()=>{
+ $('#callState').textContent='Chamando…';
+ try{stream=await navigator.mediaDevices.getUserMedia({video:{width:1280,height:720},audio:true});
+  $('#localPip').srcObject=stream;$('#pip').classList.add('show');$('#camNote').textContent='';
+ }catch(e){$('#camNote').textContent='Câmera/microfone indisponíveis neste dispositivo — a chamada segue em modo demonstração.'}
+ setTimeout(()=>{$('#callState').textContent='Conectado • HD 720p ✓';
+  $('#goCall').style.display='none';['#mic','#cam','#endCall'].forEach(s=>$(s).style.display='');
+  $('#timer').style.display='block';sec=0;tInt=setInterval(()=>{sec++;$('#timer').textContent=String(sec/60|0).padStart(2,'0')+':'+String(sec%60).padStart(2,'0')},1000)},1200)};
+$('#mic').onclick=()=>{if(stream)stream.getAudioTracks().forEach(t=>t.enabled=!t.enabled);$('#mic').textContent=$('#mic').textContent==='🎤'?'🔇':'🎤'};
+$('#cam').onclick=()=>{if(stream)stream.getVideoTracks().forEach(t=>t.enabled=!t.enabled);$('#cam').style.opacity=$('#cam').style.opacity==='0.4'?1:.4};
+$('#endCall').onclick=()=>{if(stream)stream.getTracks().forEach(t=>t.stop());stream=null;clearInterval(tInt);
+ $('#pip').classList.remove('show');$('#timer').style.display='none';$('#callState').textContent='Chamada encerrada • '+$('#timer').textContent;
+ ['#mic','#cam','#endCall'].forEach(s=>$(s).style.display='none');$('#goCall').style.display='';$('#goCall').textContent='📞 Ligar novamente'};
+
+/* ---------- GALERIA ---------- */
+const SEED=[ 'linear-gradient(135deg,#f6a07a,#e8664a)','linear-gradient(135deg,#7ec8e3,#3a7ca5)','linear-gradient(135deg,#ffd58a,#f08a4b)'];
+function svgPh(i,txt,h){return 'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="400" height="${h}"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${['#f6a07a','#6ec1e4','#ffd58a','#c79bf2','#8fd3a8'][i%5]}"/><stop offset="1" stop-color="${['#e8664a','#2f6f9f','#f08a4b','#8f5fd1','#3e9d6a'][i%5]}"/></linearGradient></defs><rect width="400" height="${h}" fill="url(#g)"/><text x="200" y="${h/2}" font-size="64" text-anchor="middle">${['🌅','🏔️','🍰','🎂','🌊'][i%5]}</text><text x="200" y="${h/2+44}" font-size="20" fill="#fff" text-anchor="middle" font-family="sans-serif">${txt}</text></svg>`)}
+let gal=[];
+function loadGal(){gal=store.get('gal',null);
+ if(!gal){gal=[{src:svgPh(0,'Pôr do sol em Auckland',320),cap:'Pôr do sol em Auckland'},{src:svgPh(1,'Trilha na Nova Zelândia',420),cap:'Trilha na Nova Zelândia'},{src:svgPh(2,'Nosso café da tarde',360),cap:'Nosso café da tarde'},{src:svgPh(4,'Praia no Brasil',300),cap:'Praia no Brasil'}];store.set('gal',gal)}
+ renderGal()}
+function renderGal(){$('#grid').innerHTML=gal.map(g=>`<div class="it">${g.video?`<video src="${g.src}" controls></video>`:`<img src="${g.src}">`}<div class="cap">${g.cap}</div></div>`).join('');$('#sPho').textContent=gal.length}
+$('#upGal').onchange=e=>{[...e.target.files].forEach(f=>{const r=new FileReader();r.onload=()=>{gal.unshift({src:r.result,cap:f.name,video:f.type.startsWith('video')});try{store.set('gal',gal)}catch(x){}renderGal()};r.readAsDataURL(f)})};
+
+/* ---------- MEMÓRIAS ---------- */
+let mem=[];
+function loadMem(){mem=store.get('mem',null);
+ if(!mem){mem=[{d:'2024-03-12',t:'O primeiro "oi"',x:'Começamos a conversar e o tempo parou.'},{d:'2025-01-20',t:'Primeira chamada de vídeo',x:'Mesmo com 11 horas de diferença, ficamos acordados até o sol nascer.'},{d:'2025-12-24',t:'Natal à distância',x:'Abrimos os presentes juntos pela câmera.'}];store.set('mem',mem)}
+ renderMem()}
+function renderMem(){mem.sort((a,b)=>b.d.localeCompare(a.d));
+ $('#tl').innerHTML=mem.map(m=>`<div class="mem"><time>${new Date(m.d+'T12:00').toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'})}</time><h3>${m.t}</h3><p>${m.x}</p></div>`).join('');$('#sMem').textContent=mem.length}
+$('#memForm').onsubmit=e=>{e.preventDefault();mem.push({d:$('#mDate').value,t:$('#mTitle').value,x:$('#mText').value});store.set('mem',mem);renderMem();e.target.reset()};
+
+/* ---------- PERFIL ---------- */
+function loadProfile(){
+ const U=USERS[me];const accountsForProfile=store.get('accounts',{});
+ $('#deleteAccount').style.display=Object.values(accountsForProfile).some(a=>a.key===me)?'inline-flex':'none';
+ const P=store.get('prof_'+me,{bio:me==='voce'?'Do outro lado do mundo, sempre ao seu lado 💛':'Kia ora! Vivendo a 11 mil km, mas sempre perto 🌏',cover:'',avatar:''});
+ $('#pName').textContent=U.name;$('#avInit').textContent=U.name[0];$('#bio').textContent=P.bio;
+ if(P.cover)$('#cover').style.backgroundImage=`url(${P.cover})`;
+ if(P.avatar){$('#avatar').style.backgroundImage=`url(${P.avatar})`;$('#avInit').style.display='none'}
+ window._P=P;
+ const diff=(new Date(new Date().toLocaleString('en-US',{timeZone:'Pacific/Auckland'}))-new Date(new Date().toLocaleString('en-US',{timeZone:'America/Sao_Paulo'})))/36e5;
+ $('#diff').textContent=Math.round(diff)+' horas à frente na Nova Zelândia'}
+const savP=()=>{try{store.set('prof_'+me,window._P)}catch(e){}};
+function readImg(inp,cb){inp.onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>cb(r.result);r.readAsDataURL(f)}}
+readImg($('#upCover'),d=>{_P.cover=d;$('#cover').style.backgroundImage=`url(${d})`;savP()});
+readImg($('#upAv'),d=>{_P.avatar=d;$('#avatar').style.backgroundImage=`url(${d})`;$('#avInit').style.display='none';savP()});
+$('#editBio').onclick=()=>{const b=$('#bio');if(b.isContentEditable){b.contentEditable=false;b.removeAttribute('contenteditable');_P.bio=b.textContent;savP();$('#editBio').textContent='✎ Editar status'}else{b.contentEditable=true;b.focus();$('#editBio').textContent='✔ Salvar'}};
+const LOC={br:[-23.5505,-46.6333],nz:[-36.8485,174.7633]};
+function setMap(k){$$('.places button').forEach(b=>b.classList.toggle('on',b.dataset.loc===k));const [la,lo]=LOC[k],d=.08;
+ $('#map').src=`https://www.openstreetmap.org/export/embed.html?bbox=${lo-d},${la-d},${lo+d},${la+d}&layer=mapnik&marker=${la},${lo}`}
+$$('.places button').forEach(b=>b.onclick=()=>setMap(b.dataset.loc));
+</script>
+</body>
+</html>
